@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wellness Tracker</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Firebase v10 (compat) SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDh4Cxsqa2T27i0rLyd1bFlHhaL8lKz5Os",
+      authDomain: "pm-assignment-5608d.firebaseapp.com",
+      projectId: "pm-assignment-5608d",
+      storageBucket: "pm-assignment-5608d.appspot.com",
+      messagingSenderId: "1057890838510",
+      appId: "1:1057890838510:web:7e9e2d5e3f4c0a8d6d5e5c"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <!-- Authentication Card -->
+  <div class="auth-card" id="authCard">
+    <div class="auth-container">
+      <h2 class="auth-heading">Welcome to Wellness Tracker</h2>
+      <p class="auth-desc">Sign up or login to track your wellness</p>
+      <form id="authForm" autocomplete="on" onsubmit="return false;">
+        <div class="auth-field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email" required autocomplete="username">
+        </div>
+        <div class="auth-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+        <div id="authMessage" class="auth-message"></div>
+        <div class="auth-buttons-group">
+          <button type="button" id="signupBtn" class="auth-btn">Sign Up</button>
+          <button type="button" id="loginBtn" class="auth-btn">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App Container (hidden until logged in) -->
+  <div class="container" id="appContainer" style="display: none;">
+    <header class="app-header">
+      <h1>Wellness Tracker</h1>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </header>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards" id="summaryCards">
+      <div class="card" style="position:relative; overflow:hidden;">
+        <div class="card-bg" style="background-image:url('images/walking.jpg'); background-color:#2792d9; background-size:cover; background-position:center; opacity:0.15; position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;"></div>
+        <div class="card-content" style="position:relative; z-index:1;">
+          <span class="icon">👣</span>
+          <h3>Total Steps</h3>
+          <p id="totalSteps">0</p>
+        </div>
+      </div>
+      <div class="card" style="position:relative; overflow:hidden;">
+        <div class="card-bg" style="background-image:url('images/sleeping.jpg'); background-color:#eee265; background-size:cover; background-position:center; opacity:0.15; position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;"></div>
+        <div class="card-content" style="position:relative; z-index:1;">
+          <span class="icon">😴</span>
+          <h3>Avg Sleep</h3>
+          <p id="avgSleep">0h</p>
+        </div>
+      </div>
+      <div class="card" style="position:relative; overflow:hidden;">
+        <div class="card-bg" style="background-image:url('images/mood.png'); background-color:#d0308b; background-size:cover; background-position:center; opacity:0.15; position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;"></div>
+        <div class="card-content" style="position:relative; z-index:1;">
+          <span class="icon">🙂</span>
+          <h3>Mood</h3>
+          <p id="commonMood">-</p>
+        </div>
+      </div>
+      <div class="card" style="position:relative; overflow:hidden;">
+        <div class="card-bg" style="background-image:url('images/idea.jpg'); background-color:#2dda61; background-size:cover; background-position:center; opacity:0.15; position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;"></div>
+        <div class="card-content" style="position:relative; z-index:1;">
+          <span class="icon">💡</span>
+          <h3>AI Tip</h3>
+          <p id="aiTip">Get started by adding your first entry!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry Form -->
+    <div class="form-section">
+      <h2>Add New Entry</h2>
+      <form id="entryForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="steps">Steps walked:</label>
+            <input type="number" id="steps" placeholder="Steps walked" required min="0">
+          </div>
+          <div class="form-group">
+            <label for="sleep">Sleep hours:</label>
+            <input type="number" id="sleep" placeholder="Sleep hours" required min="0" step="0.1" max="24">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="mood">Mood:</label>
+            <select id="mood" required>
+              <option value="">Select Mood</option>
+              <option value="Happy">Happy</option>
+              <option value="Neutral">Neutral</option>
+              <option value="Tired">Tired</option>
+              <option value="Stressed">Stressed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes (optional):</label>
+            <input type="text" id="notes" placeholder="Notes (optional)">
+          </div>
+        </div>
+        <button type="submit" class="submit-btn">Add Entry</button>
+      </form>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <h2>Your Wellness Data</h2>
+      <div class="charts-container">
+        <div class="chart-card">
+          <h3>Steps Over Time</h3>
+          <canvas id="stepsChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Sleep Hours</h3>
+          <canvas id="sleepChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Mood Distribution</h3>
+          <canvas id="moodChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entries List -->
+    <div class="entries-section">
+      <h2>Your Entries</h2>
+      <div class="filters-exports-group">
+        <div class="filter-group">
+          <h3>Filter by Date</h3>
+          <div class="filter-controls">
+            <div class="filter-input">
+              <label for="startDate">Start Date:</label>
+              <input type="date" id="startDate">
+            </div>
+            <div class="filter-input">
+              <label for="endDate">End Date:</label>
+              <input type="date" id="endDate">
+            </div>
+            <button id="filterBtn" class="filter-btn">Apply Filter</button>
+            <button id="clearFilterBtn" class="filter-btn secondary">Clear Filter</button>
+          </div>
+        </div>
+        <div class="export-group">
+          <h3>Export Entries</h3>
+          <div class="export-buttons">
+            <button id="exportCSV" class="export-btn">Export CSV</button>
+            <button id="exportPDF" class="export-btn">Export PDF</button>
+          </div>
+        </div>
+      </div>
+      <div id="entriesList" class="entries-list"></div>
+    </div>
+
+    <button id="toggleTheme" class="theme-toggle">Toggle Dark/Light Mode</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
