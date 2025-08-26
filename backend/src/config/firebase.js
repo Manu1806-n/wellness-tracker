@@ -21,9 +21,9 @@ try {
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    projectId: process.env.FIREBASE_PROJECT_ID || "pm-assignment-5608d"
+    projectId: serviceAccount.project_id
   });
-  console.log("✅ Firebase Admin initialized");
+  console.log("✅ Firebase Admin initialized for project:", serviceAccount.project_id);
 }
 
 export default admin;

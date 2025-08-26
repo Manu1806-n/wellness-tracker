@@ -4,6 +4,7 @@ import cors from "cors";
 import healthRoutes from "./routes/health.js";
 import authRoutes from "./routes/auth.js";
 import wellnessRoutes from "./routes/wellness.js";
+import verifyFirebaseToken from "./middleware/auth.js";
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/wellness", wellnessRoutes);
+app.use("/api/wellness", verifyFirebaseToken, wellnessRoutes);
 
 // Root route
 app.get("/", (req, res) => {
