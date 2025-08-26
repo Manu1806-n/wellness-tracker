@@ -3,6 +3,22 @@
 A full-stack wellness tracking application built as part of the **Tech Inject Take-Home Assignment**.  
 The app allows users to track their daily wellness metrics (steps, sleep, mood, and notes) with authentication, CRUD operations, data visualization, and AI-powered tips.
 
+## 🌐 Live Demo
+
+- **Frontend (Vercel)**: [https://wellness-tracker-opal.vercel.app](https://wellness-tracker-opal.vercel.app)  
+- **Backend (Render)**: [https://wellness-tracker-49up.onrender.com](https://wellness-tracker-49up.onrender.com)
+  
+---
+
+## 📺 Video Walkthrough
+
+I’ve prepared a **3–5 minute video walkthrough** of the Wellness Tracker app to demonstrate all features, including authentication, CRUD operations, dashboard, charts, filters, export, and bonus features.
+
+Watch the video here:  
+[Video Walkthrough (YouTube Unlisted)](https://youtu.be/rbSJSRFkoUQ)
+
+> Tip: The video also highlights the deployed frontend (Vercel) and backend (Render) to showcase the live app.
+
 ---
 
 ## 📌 Features
@@ -36,17 +52,19 @@ The app allows users to track their daily wellness metrics (steps, sleep, mood, 
 ## 🚀 Getting Started
 
 ### 1. Clone Repository
+
 ```bash
 git clone https://github.com/Manu1806-n/wellness-tracker.git
 cd wellness-tracker
-
+```
 
 ### 2. Backend Setup
 
+```
 cd backend
 npm install
 npm start
-
+```
 
 ### 3. Frontend Setup
 
@@ -71,13 +89,13 @@ Password: Demo123!
 	•	AI Tip Card
 
 
-![Dashboard Screenshot](screenshots/dashboard.png))
+![Dashboard Screenshot](screenshots/dashboard.png)
 
-![Steps Chart](screenshots/steps.png))
+![Steps Chart](screenshots/steps.png)
 
 
 
-📂 Project Structure
+## 📂 Project Structure
 
 wellness-tracker/
 │
@@ -94,12 +112,18 @@ wellness-tracker/
 └── README.md
 
 
-🎯 Bonus Features Implemented
+
+## 🎯 Bonus Features Implemented
 	•	AI-powered personalized tips
 	•	Dark/Light theme toggle
 	•	Export entries to CSV/PDF
 
 
-📧 Submission
+## 📩 Submission
 
-[Take-Home] Wellness Tracker – Manavi – Full-Stack Engineer
+- GitHub Repo: [https://github.com/Manu1806-n/wellness-tracker](https://github.com/Manu1806-n/wellness-tracker)  
+- Live Demo: [Links above]  
+- Demo Credentials:  
+  - Email: demo@wellness.com  
+  - Password: Demo123!
+- Video Walkthrough: [https://youtu.be/rbSJSRFkoUQ]
