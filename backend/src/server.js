@@ -13,10 +13,15 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
 // CORS configuration
 app.use(cors({
-  origin: [CLIENT_ORIGIN, "http://localhost:5173", "http://127.0.0.1:5500"],
+  origin: [
+    CLIENT_ORIGIN,
+    "http://localhost:5173",
+    "http://127.0.0.1:5500",
+    "https://wellness-tracker-opal.vercel.app",   // Vercel frontend
+    "https://wellness-tracker-49up.onrender.com" // Render backend
+  ],
   credentials: true
 }));
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
