@@ -1,7 +1,23 @@
 // Firebase Web SDK initialization
 const auth = firebase.auth();
-const apiBase = "https://wellness-tracker-49up.onrender.com";
+// Disable auto-login persistence (user must log in every time)
+auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
+  .then(() => {
+    console.log("Persistence set to NONE (no auto-login).");
+    // Clear any existing session to avoid auto-login
+    return auth.signOut();
+  })
+  .catch((error) => {
+    console.error("Persistence error:", error);
+  });
+// Detect environment (local vs deployed)
+const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
+// Base API URL
+const apiBase = isLocal
+  ? "http://localhost:8080/api"         // Local backend
+  : "https://wellness-tracker-49up.onrender.com/api";  // Render backend
+  
 // DOM Elements
 const authCard = document.getElementById("authCard");
 const appContainer = document.getElementById("appContainer");
@@ -42,6 +58,22 @@ let filteredEntries = [];
 let isEditing = false;
 let editingId = null;
 
+// Unified API fetch with Firebase token
+async function apiFetch(url, options = {}) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("No user authenticated");
+
+  const token = await user.getIdToken();
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+}
+
 // Initialize the app
 function initApp() {
   // Set default dates for filters
@@ -60,9 +92,9 @@ function initApp() {
   // Set up auth state listener
   auth.onAuthStateChanged(async (user) => {
     if (user) {
-      // Try to refresh the token and load entries, sign out on any error
+      // Try to refresh the token and load entries, show error toast on failure
       try {
-        await user.getIdToken(true);
+        await user.getIdToken();
         // User is signed in and token is valid
         console.log("✅ User signed in:", user.email);
         showToast("Logged in successfully!", "success");
@@ -71,9 +103,8 @@ function initApp() {
         // Load user's entries
         await loadEntries();
       } catch (err) {
-        // If token refresh or loadEntries fails, sign out and return
-        await auth.signOut();
-        return;
+        // If token refresh or loadEntries fails, show error toast but do not sign out
+        showToast("Failed to load your data. Please try again.", "error");
       }
     } else {
       // User is signed out
@@ -129,7 +160,7 @@ async function handleSignup() {
     const user = userCredential.user;
     
     // Then create user in our backend
-    const response = await fetch("http://localhost:8080/api/auth/signup", {
+    const response = await fetch(`${apiBase}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -211,24 +242,23 @@ async function handleAddEntry(e) {
   }
   
   try {
-    // Get a fresh ID token
-    const token = await user.getIdToken(true);
-    
-    const response = await fetch(apiBase, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
+    const url = isEditing ? `${apiBase}/wellness/${editingId}` : `${apiBase}/wellness`;
+    const method = isEditing ? "PUT" : "POST";
+
+    const response = await apiFetch(url, {
+      method,
       body: JSON.stringify({ steps, sleep, mood, notes })
     });
-    
+
     const data = await response.json();
-    
+
     if (data.success) {
       showToast("Entry added successfully!", "success");
       entryForm.reset();
       await loadEntries();
+      isEditing = false;
+      editingId = null;
+      entryForm.querySelector('button[type="submit"]').textContent = "Add Entry";
     } else {
       showToast("Failed to add entry: " + data.error, "error");
     }
@@ -244,18 +274,10 @@ async function loadEntries() {
   if (!user) return;
   
   try {
-    // Get a fresh ID token
-    const token = await user.getIdToken(true);
-    
-    const response = await fetch(apiBase, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-    
+    const response = await apiFetch(`${apiBase}/wellness`, { method: "GET" });
+
     const data = await response.json();
-    
+
     if (data.success) {
       entries = data.entries || [];
       applyFilters(); // Apply current filters
@@ -263,13 +285,13 @@ async function loadEntries() {
       updateCharts();
       updateSummary();
     } else {
-      // If backend says token is invalid, sign out
-      await auth.signOut();
+      // If backend says token is invalid or failed, show toast instead of signing out
+      showToast("Failed to load entries: Invalid token or server error.", "error");
     }
   } catch (error) {
     console.error("Load entries error:", error);
-    // If token fetch or fetch fails, sign out instead of just showing a toast
-    await auth.signOut();
+    // If token fetch or fetch fails, show error toast and do not sign out
+    showToast("Failed to load entries: " + error.message, "error");
   }
 }
 
@@ -339,18 +361,10 @@ async function handleDeleteEntry(id) {
   if (!user) return;
   
   try {
-    // Get a fresh ID token
-    const token = await user.getIdToken(true);
-    
-    const response = await fetch(`${apiBase}/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-    
+    const response = await apiFetch(`${apiBase}/wellness/${id}`, { method: "DELETE" });
+
     const data = await response.json();
-    
+
     if (data.success) {
       showToast("Entry deleted successfully!", "success");
       await loadEntries();
