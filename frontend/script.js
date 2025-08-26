@@ -1,6 +1,6 @@
 // Firebase Web SDK initialization
 const auth = firebase.auth();
-const apiBase = "http://localhost:8080/api/wellness";
+const apiBase = "https://wellness-tracker-49up.onrender.com";
 
 // DOM Elements
 const authCard = document.getElementById("authCard");
