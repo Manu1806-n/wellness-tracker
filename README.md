@@ -37,7 +37,7 @@ The app allows users to track their daily wellness metrics (steps, sleep, mood, 
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/your-username/wellness-tracker.git
+git clone https://github.com/Manu1806-n/wellness-tracker.git
 cd wellness-tracker
 
 
@@ -71,9 +71,9 @@ Password: Demo123!
 	•	AI Tip Card
 
 
-![Dashboard Screenshot](wellness-tracker/screenshots/dashboard.png)
+![Dashboard Screenshot](screenshots/dashboard.png))
 
-![Steps Chart](wellness-tracker/screenshots/steps.png)
+![Steps Chart](screenshots/steps.png))
 
 
 
