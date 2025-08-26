@@ -13,7 +13,7 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 
 // CORS configuration
 app.use(cors({
-  origin: ["http://localhost:5173", "http://127.0.0.1:5500"],
+  origin: [CLIENT_ORIGIN, "http://localhost:5173", "http://127.0.0.1:5500"],
   credentials: true
 }));
 
@@ -50,5 +50,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
-  console.log("✅ CORS enabled for: http://localhost:5173 and http://127.0.0.1:5500");
+  console.log("✅ CORS enabled for: Client origin, http://localhost:5173 and http://127.0.0.1:5500");
 });
